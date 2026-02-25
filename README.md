@@ -27,7 +27,7 @@ You don't need to install Python or PostgreSQL locally. Just use Docker!
 
 1. **Clone the repository:**
    ```bash
-   git clone [https://github.com/YOUR_USERNAME/evograph.git](https://github.com/Kerim-Altny/evograph.git)
+   git clone [https://github.com/Kerim-Altny/evograph.git](https://github.com/Kerim-Altny/evograph.git)
    cd evograph
 Environment Variables:
 Create a .env file in the root directory and add your API keys:
