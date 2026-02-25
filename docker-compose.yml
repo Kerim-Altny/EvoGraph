@@ -1,0 +1,34 @@
+services:
+
+  # ── PostgreSQL Database ─────────────────────────────────────────────────────
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: evouser
+      POSTGRES_PASSWORD: evopassword
+      POSTGRES_DB: evograph
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U evouser -d evograph" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ── FastAPI Application ─────────────────────────────────────────────────────
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy # Wait until DB is healthy
+    env_file:
+      - .env # API_NINJAS_KEY, GEMINI_API_KEY, UNSPLASH_ACCESS_KEY
+    environment:
+      # Override .env DATABASE_URL with Docker internal Postgres
+      DATABASE_URL: postgresql+asyncpg://evouser:evopassword@db:5432/evograph
+
+# ── Persistent data volume ──────────────────────────────────────────────────────
+volumes:
+  postgres_data:

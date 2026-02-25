@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EvoGraph – Evolutionary Tree</title>
+    <link rel="stylesheet" href="/static/style.css" />
+    <!-- Vis Network CDN -->
+    <script src="https://unpkg.com/vis-network@9.1.9/standalone/umd/vis-network.min.js"></script>
+</head>
+
+<body>
+    <!-- ── HEADER ──────────────────────────────────────────────────────── -->
+    <header class="topbar">
+        <div class="topbar-brand">
+            <span class="topbar-icon">🧬</span>
+            <div>
+                <h1>EvoGraph</h1>
+                <p>Evolutionary Tree Visualizer</p>
+            </div>
+        </div>
+        <div class="topbar-stats">
+            <div class="stat-chip" id="stat-nodes">– species</div>
+            <div class="stat-chip" id="stat-edges">– links</div>
+            <button class="lca-btn" id="lca-btn">🔗 Find Common Ancestor</button>
+            <button class="add-btn" id="add-btn">+ Add Animal</button>
+        </div>
+    </header>
+
+    <!-- ── MAIN LAYOUT ────────────────────────────────────────────────── -->
+    <main class="layout">
+
+        <div id="network"></div>
+
+        <aside id="info-panel" class="info-panel hidden">
+            <button id="close-btn" title="Close">✕</button>
+
+            <div id="panel-image-wrap" class="panel-image-wrap hidden">
+                <img id="panel-image" class="panel-image" src="" alt="" />
+            </div>
+
+            <div class="panel-header">
+                <span class="panel-emoji" id="panel-emoji">🐾</span>
+                <div>
+                    <h2 id="panel-name">—</h2>
+                    <p class="panel-sci" id="panel-sci">—</p>
+                </div>
+            </div>
+
+            <div class="panel-grid">
+                <div class="panel-item">
+                    <label>🗺 Location</label>
+                    <span id="panel-locations">—</span>
+                </div>
+                <div class="panel-item">
+                    <label>🔬 Class</label>
+                    <span id="panel-class">—</span>
+                </div>
+                <div class="panel-item">
+                    <label>⌛ Lifespan</label>
+                    <span id="panel-lifespan">—</span>
+                </div>
+                <div class="panel-item">
+                    <label>⚖️ Weight</label>
+                    <span id="panel-weight">—</span>
+                </div>
+            </div>
+
+            <div class="funfact-box" id="funfact-box">
+                <div class="funfact-label">🤖 Gemini AI Fun Fact</div>
+                <p id="panel-funfact">Not yet generated or no information available for this animal.</p>
+            </div>
+
+            <button id="delete-btn" class="delete-btn">🗑️ Delete Animal</button>
+        </aside>
+    </main>
+
+    <!-- ── LOADING OVERLAY ─────────────────────────────────────────────── -->
+    <div id="loader" class="loader-overlay">
+        <div class="loader-spinner"></div>
+        <p>Loading tree…</p>
+    </div>
+
+    <!-- ── ADD ANIMAL MODAL ──────────────────────────────────────────── -->
+    <div id="modal-overlay" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>🦠 Add New Animal</h3>
+                <button id="modal-close">✕</button>
+            </div>
+            <p class="modal-hint">Enter the animal's English name.</p>
+            <div class="modal-input-row">
+                <input id="animal-input" type="text" placeholder="E.g: lion, tiger, eagle..." autocomplete="off" />
+                <button id="modal-submit" class="submit-btn">Add</button>
+            </div>
+            <div id="modal-status" class="modal-status hidden"></div>
+        </div>
+    </div>
+
+    <!-- ── LCA MODAL ─────────────────────────────────────────────────── -->
+    <div id="lca-overlay" class="modal-overlay hidden">
+        <div class="modal lca-modal">
+            <div class="modal-header">
+                <h3>🔗 Lowest Common Ancestor</h3>
+                <button id="lca-close">✕</button>
+            </div>
+            <p class="modal-hint">Select two different animals — their common ancestor and evolutionary distances will
+                be calculated.</p>
+
+            <div class="lca-selects">
+                <div class="lca-select-group">
+                    <label>1st Animal</label>
+                    <select id="lca-select-1">
+                        <option value="">— Select —</option>
+                    </select>
+                </div>
+                <div class="lca-vs">VS</div>
+                <div class="lca-select-group">
+                    <label>2nd Animal</label>
+                    <select id="lca-select-2">
+                        <option value="">— Select —</option>
+                    </select>
+                </div>
+            </div>
+
+            <button id="lca-submit" class="submit-btn lca-submit-btn">🔍 Find Common Ancestor</button>
+
+            <div id="lca-status" class="modal-status hidden"></div>
+
+            <!-- Result card -->
+            <div id="lca-result" class="lca-result hidden">
+                <div class="lca-result-ancestor">
+                    <div class="lca-ancestor-icon">🌿</div>
+                    <div>
+                        <div class="lca-ancestor-label">Lowest Common Ancestor</div>
+                        <div class="lca-ancestor-name" id="lca-ancestor-name">—</div>
+                        <div class="lca-ancestor-sci" id="lca-ancestor-sci"></div>
+                    </div>
+                </div>
+                <div class="lca-distances">
+                    <div class="lca-dist-card">
+                        <span class="lca-dist-animal" id="lca-dist-label-1">—</span>
+                        <span class="lca-dist-val" id="lca-dist-1">—</span>
+                        <span class="lca-dist-unit">generations</span>
+                    </div>
+                    <div class="lca-dist-card lca-dist-total">
+                        <span class="lca-dist-animal">Total</span>
+                        <span class="lca-dist-val" id="lca-dist-total">—</span>
+                        <span class="lca-dist-unit">generations</span>
+                    </div>
+                    <div class="lca-dist-card">
+                        <span class="lca-dist-animal" id="lca-dist-label-2">—</span>
+                        <span class="lca-dist-val" id="lca-dist-2">—</span>
+                        <span class="lca-dist-unit">generations</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+
+</html>

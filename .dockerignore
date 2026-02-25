@@ -1,0 +1,33 @@
+# Gizli / ortam dosyaları
+.env
+
+# Python derlenmiş dosyaları
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pycache
+
+# Sanal ortamlar
+venv/
+.venv/
+env/
+
+# Git
+.git/
+.gitignore
+
+# Geliştirme araçları
+.vscode/
+.idea/
+*.egg-info/
+dist/
+build/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test / log
+*.log
+.pytest_cache/
