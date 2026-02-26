@@ -1,3 +1,6 @@
+<img width="1901" height="866" alt="image" src="https://github.com/user-attachments/assets/5d223b42-7f14-4d30-b554-e4d5c61c099b" />
+
+
 # EvoGraph: AI-Powered Phylogenetic Tree API 🧬
 
 A REST API that visualizes the evolutionary connections between animals, using public APIs for data and Google Gemini AI for biological facts.
